@@ -2,21 +2,18 @@
 
 using namespace std;
 
-// Структура для массива
 struct Array {
-    int* data;       // Указатель на массив
+    int* data;
     int size;        // Текущий размер массива
     int capacity;    // Максимальная вместимость массива
 };
 
-// Инициализация массива с заданной емкостью
 void init(Array& arr, int cap) {
     arr.data = new int[cap];
     arr.size = 0;
     arr.capacity = cap;
 }
 
-// Освобождение памяти
 void destroy(Array& arr) {
     delete[] arr.data;
     arr.data = nullptr;
@@ -24,7 +21,6 @@ void destroy(Array& arr) {
     arr.capacity = 0;
 }
 
-// Добавление элемента в конец массива
 void append(Array& arr, int value) {
     if (arr.size >= arr.capacity) {
         // Увеличение емкости массива
@@ -39,7 +35,6 @@ void append(Array& arr, int value) {
     arr.data[arr.size++] = value;
 }
 
-// Вставка элемента по индексу
 void insert(Array& arr, int index, int value) {
     if (index < 0 || index > arr.size) {
         cerr << "Индекс за пределами допустимого" << endl;
@@ -61,7 +56,6 @@ void insert(Array& arr, int index, int value) {
     arr.size++;
 }
 
-// Получение элемента по индексу
 int get(const Array& arr, int index) {
     if (index < 0 || index >= arr.size) {
         cerr << "Индекс за пределами допустимого" << endl;
@@ -70,7 +64,6 @@ int get(const Array& arr, int index) {
     return arr.data[index];
 }
 
-// Удаление элемента по индексу
 void remove(Array& arr, int index) {
     if (index < 0 || index >= arr.size) {
         cerr << "Индекс за пределами допустимого" << endl;
@@ -82,7 +75,6 @@ void remove(Array& arr, int index) {
     arr.size--;
 }
 
-// Замена элемента по индексу
 void replace(Array& arr, int index, int value) {
     if (index < 0 || index >= arr.size) {
         cerr << "Индекс за пределами допустимого" << endl;
@@ -91,12 +83,10 @@ void replace(Array& arr, int index, int value) {
     arr.data[index] = value;
 }
 
-// Получение длины массива
 int length(const Array& arr) {
     return arr.size;
 }
 
-// Вывод элементов массива
 void display(const Array& arr) {
     for (int i = 0; i < arr.size; ++i) {
         cout << arr.data[i] << " ";
@@ -104,30 +94,27 @@ void display(const Array& arr) {
     cout << endl;
 }
 
-// Основная функция для тестирования
 int main() {
     Array arr;
 
-    // Инициализация массива с начальной емкостью 2
     init(arr, 2);
 
     append(arr, 10);
     append(arr, 20);
-    append(arr, 30); // Увеличится емкость
-    display(arr); // Вывод: 10 20 30
+    append(arr, 30);
+    display(arr);
 
     insert(arr, 1, 15);
-    display(arr); // Вывод: 10 15 20 30
+    display(arr);
 
     remove(arr, 2);
-    display(arr); // Вывод: 10 15 30
+    display(arr);
 
     replace(arr, 0, 5);
-    display(arr); // Вывод: 5 15 30
+    display(arr);
 
-    cout << "Length: " << length(arr) << endl; // Вывод: 3
+    cout << "Length: " << length(arr) << endl;
 
-    // Освобождение памяти
     destroy(arr);
 
     return 0;
