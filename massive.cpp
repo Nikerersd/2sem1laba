@@ -1,21 +1,23 @@
 #include <iostream>
 
+using namespace std;
+
 // Структура для массива
-struct DynamicArray {
+struct Array {
     int* data;       // Указатель на массив
     int size;        // Текущий размер массива
     int capacity;    // Максимальная вместимость массива
 };
 
 // Инициализация массива с заданной емкостью
-void init(DynamicArray& arr, int cap) {
+void init(Array& arr, int cap) {
     arr.data = new int[cap];
     arr.size = 0;
     arr.capacity = cap;
 }
 
 // Освобождение памяти
-void destroy(DynamicArray& arr) {
+void destroy(Array& arr) {
     delete[] arr.data;
     arr.data = nullptr;
     arr.size = 0;
@@ -23,7 +25,7 @@ void destroy(DynamicArray& arr) {
 }
 
 // Добавление элемента в конец массива
-void append(DynamicArray& arr, int value) {
+void append(Array& arr, int value) {
     if (arr.size >= arr.capacity) {
         // Увеличение емкости массива
         arr.capacity *= 2;
@@ -38,9 +40,9 @@ void append(DynamicArray& arr, int value) {
 }
 
 // Вставка элемента по индексу
-void insert(DynamicArray& arr, int index, int value) {
+void insert(Array& arr, int index, int value) {
     if (index < 0 || index > arr.size) {
-        std::cerr << "Index out of bounds" << std::endl;
+        cerr << "Индекс за пределами допустимого" << endl;
         return;
     }
     if (arr.size >= arr.capacity) {
@@ -60,18 +62,18 @@ void insert(DynamicArray& arr, int index, int value) {
 }
 
 // Получение элемента по индексу
-int get(const DynamicArray& arr, int index) {
+int get(const Array& arr, int index) {
     if (index < 0 || index >= arr.size) {
-        std::cerr << "Index out of bounds" << std::endl;
-        return -1; // Возвращаем -1 в случае ошибки
+        cerr << "Индекс за пределами допустимого" << endl;
+        return -1;
     }
     return arr.data[index];
 }
 
 // Удаление элемента по индексу
-void remove(DynamicArray& arr, int index) {
+void remove(Array& arr, int index) {
     if (index < 0 || index >= arr.size) {
-        std::cerr << "Index out of bounds" << std::endl;
+        cerr << "Индекс за пределами допустимого" << endl;
         return;
     }
     for (int i = index; i < arr.size - 1; ++i) {
@@ -81,30 +83,30 @@ void remove(DynamicArray& arr, int index) {
 }
 
 // Замена элемента по индексу
-void replace(DynamicArray& arr, int index, int value) {
+void replace(Array& arr, int index, int value) {
     if (index < 0 || index >= arr.size) {
-        std::cerr << "Index out of bounds" << std::endl;
+        cerr << "Индекс за пределами допустимого" << endl;
         return;
     }
     arr.data[index] = value;
 }
 
 // Получение длины массива
-int length(const DynamicArray& arr) {
+int length(const Array& arr) {
     return arr.size;
 }
 
 // Вывод элементов массива
-void display(const DynamicArray& arr) {
+void display(const Array& arr) {
     for (int i = 0; i < arr.size; ++i) {
-        std::cout << arr.data[i] << " ";
+        cout << arr.data[i] << " ";
     }
-    std::cout << std::endl;
+    cout << endl;
 }
 
 // Основная функция для тестирования
 int main() {
-    DynamicArray arr;
+    Array arr;
 
     // Инициализация массива с начальной емкостью 2
     init(arr, 2);
@@ -123,7 +125,7 @@ int main() {
     replace(arr, 0, 5);
     display(arr); // Вывод: 5 15 30
 
-    std::cout << "Length: " << length(arr) << std::endl; // Вывод: 3
+    cout << "Length: " << length(arr) << endl; // Вывод: 3
 
     // Освобождение памяти
     destroy(arr);
