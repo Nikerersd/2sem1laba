@@ -1,28 +1,29 @@
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
-struct Node {
+struct ListOne {
     int data;
-    Node* next;
+    ListOne* next;
 };
 
-void addToHead(Node*& head, int value) {
-    Node* newNode = new Node;
+void addToHeadL1(ListOne*& head, int value) {
+    ListOne* newNode = new ListOne;
     newNode->data = value;
     newNode->next = head;
     head = newNode;
 }
 
-void addToTail(Node*& head, int value) {
-    Node* newNode = new Node;
+void addToTailL1(ListOne*& head, int value) {
+    ListOne* newNode = new ListOne;
     newNode->data = value;
     newNode->next = nullptr;
 
     if (head == nullptr) {
         head = newNode;
     } else {
-        Node* temp = head;
+        ListOne* temp = head;
         while (temp->next != nullptr) {
             temp = temp->next;
         }
@@ -30,15 +31,15 @@ void addToTail(Node*& head, int value) {
     }
 }
 
-void removeHead(Node*& head) {
+void removeHeadL1(ListOne*& head) {
     if (head != nullptr) {
-        Node* temp = head;
+        ListOne* temp = head;
         head = head->next;
         delete temp;
     }
 }
 
-void removeTail(Node*& head) {
+void removeTailL1(ListOne*& head) {
     if (head == nullptr) {
         return;
     }
@@ -47,7 +48,7 @@ void removeTail(Node*& head) {
         head = nullptr;
     } 
     else {
-        Node* temp = head;
+        ListOne* temp = head;
         while (temp->next->next != nullptr) {
             temp = temp->next;
         }
@@ -56,32 +57,32 @@ void removeTail(Node*& head) {
     }
 }
 
-void removeByValue(Node*& head, int value) {
+void removeByValueL1(ListOne*& head, int value) {
     if (head == nullptr) {
         return;
     }
 
     if (head->data == value) {
-        Node* temp = head;
+        ListOne* temp = head;
         head = head->next;
         delete temp;
         return;
     }
 
-    Node* temp = head;
+    ListOne* temp = head;
     while (temp->next != nullptr && temp->next->data != value) {
         temp = temp->next;
     }
 
     if (temp->next != nullptr) {
-        Node* toDelete = temp->next;
+        ListOne* toDelete = temp->next;
         temp->next = temp->next->next;
         delete toDelete;
     }
 }
 
-bool search(Node* head, int value) {
-    Node* temp = head;
+bool searchL1(ListOne* head, int value) {
+    ListOne* temp = head;
     while (temp != nullptr) {
         if (temp->data == value) {
             return true;
@@ -91,8 +92,8 @@ bool search(Node* head, int value) {
     return false;
 }
 
-void printList(Node* head) {
-    Node* temp = head;
+void printList1(ListOne* head) {
+    ListOne* temp = head;
     while (temp != nullptr) {
         cout << temp->data << " -> ";
         temp = temp->next;
@@ -100,44 +101,80 @@ void printList(Node* head) {
     cout << "nullptr" << endl;
 }
 
-void clearList(Node*& head) {
+void clearList1(ListOne*& head) {
     while (head != nullptr) {
-        removeHead(head);
+        removeHeadL1(head);
     }
 }
 
 int main() {
-    Node* head = nullptr;
+    ListOne* head = nullptr;
+    string command;
+    int value;
 
-    addToHead(head, 10);
-    addToTail(head, 20);
-    addToHead(head, 5);
+    cout << "Enter a command (addhead, addtail, removehead, removetail, removevalue, search, print, clear, exit):" << endl;
 
-    cout << "Список после добавления элементов: ";
-    printList(head);
+    // Основной цикл для ввода команд
+    while (true) {
+        cout << "> ";
+        getline(cin, command);
 
-    removeHead(head);
-    cout << "Список после удаления головы: ";
-    printList(head);
+        stringstream ss(command);
+        string action;
+        ss >> action;
 
-    removeTail(head);
-    cout << "Список после удаления хвоста: ";
-    printList(head);
-
-    addToTail(head, 30);
-    addToTail(head, 40);
-    cout << "Список после добавления элементов в хвост: ";
-    printList(head);
-
-    removeByValue(head, 30);
-    cout << "Список после удаления элемента со значением 30: ";
-    printList(head);
-
-    cout << "Поиск элемента 40: " << (search(head, 40) ? "Найден" : "Не найден") << std::endl;
-
-    clearList(head);
-    cout << "Список после очистки: ";
-    printList(head);
+        if (action == "addhead") {
+            ss >> value;
+            if (!ss.fail()) {
+                addToHeadL1(head, value);
+                cout << "Added to head: " << value << endl;
+            } else {
+                cout << "Invalid input. Usage: addhead <value>" << endl;
+            }
+        } else if (action == "addtail") {
+            ss >> value;
+            if (!ss.fail()) {
+                addToTailL1(head, value);
+                cout << "Added to tail: " << value << endl;
+            } else {
+                cout << "Invalid input. Usage: addtail <value>" << endl;
+            }
+        } else if (action == "removehead") {
+            removeHeadL1(head);
+            cout << "Head removed" << endl;
+        } else if (action == "removetail") {
+            removeTailL1(head);
+            cout << "Tail removed" << endl;
+        } else if (action == "removevalue") {
+            ss >> value;
+            if (!ss.fail()) {
+                removeByValueL1(head, value);
+                cout << "Removed value: " << value << endl;
+            } else {
+                cout << "Invalid input. Usage: removevalue <value>" << endl;
+            }
+        } else if (action == "search") {
+            ss >> value;
+            if (!ss.fail()) {
+                cout << "Search result for " << value << ": " 
+                     << (searchL1(head, value) ? "Found" : "Not found") << endl;
+            } else {
+                cout << "Invalid input. Usage: search <value>" << endl;
+            }
+        } else if (action == "print") {
+            cout << "List content: ";
+            printList1(head);
+        } else if (action == "clear") {
+            clearList1(head);
+            cout << "List cleared" << endl;
+        } else if (action == "exit") {
+            clearList1(head);
+            cout << "Exiting..." << endl;
+            break;
+        } else {
+            cout << "Unknown command. Available commands: addhead, addtail, removehead, removetail, removevalue, search, print, clear, exit." << endl;
+        }
+    }
 
     return 0;
 }

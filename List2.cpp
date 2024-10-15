@@ -1,20 +1,21 @@
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
-struct Node {
+struct NodeL {
     int data;
-    Node* next;
-    Node* previous;
+    NodeL* next;
+    NodeL* previous;
 };
 
 struct DoubleList {
-    Node* head;
-    Node* tail;
+    NodeL* head;
+    NodeL* tail;
 };
 
-void addToHead(DoubleList& list, int value) {
-    Node* newNode = new Node;
+void addToHeadL2(DoubleList& list, int value) {
+    NodeL* newNode = new NodeL;
     newNode->data = value;
     newNode->next = list.head;
     newNode->previous = nullptr;
@@ -28,8 +29,8 @@ void addToHead(DoubleList& list, int value) {
     list.head = newNode;
 }
 
-void addToTail(DoubleList& list, int value) {
-    Node* newNode = new Node;
+void addToTailL2(DoubleList& list, int value) {
+    NodeL* newNode = new NodeL;
     newNode->data = value;
     newNode->next = nullptr;
     newNode->previous = list.tail;
@@ -42,10 +43,10 @@ void addToTail(DoubleList& list, int value) {
     list.tail = newNode;
 }
 
-void removeFromHead(DoubleList& list) {
+void removeFromHeadL2(DoubleList& list) {
     if (list.head == nullptr) return;
 
-    Node* temp = list.head;
+    NodeL* temp = list.head;
     list.head = list.head->next;
 
     if (list.head != nullptr) {
@@ -56,10 +57,10 @@ void removeFromHead(DoubleList& list) {
     delete temp;
 }
 
-void removeFromTail(DoubleList& list) {
+void removeFromTailL2(DoubleList& list) {
     if (list.tail == nullptr) return;
 
-    Node* temp = list.tail;
+    NodeL* temp = list.tail;
     list.tail = list.tail->previous;
 
     if (list.tail != nullptr) {
@@ -70,8 +71,8 @@ void removeFromTail(DoubleList& list) {
     delete temp;
 }
 
-void removeByValue(DoubleList& list, int value) {
-    Node* temp = list.head;
+void removeByValueL2(DoubleList& list, int value) {
+    NodeL* temp = list.head;
 
     while (temp != nullptr) {
         if (temp->data == value) {
@@ -96,8 +97,8 @@ void removeByValue(DoubleList& list, int value) {
     }
 }
 
-Node* find(DoubleList& list, int value) {
-    Node* temp = list.head;
+NodeL* findL2(DoubleList& list, int value) {
+    NodeL* temp = list.head;
     while (temp != nullptr) {
         if (temp->data == value) {
             return temp;
@@ -107,8 +108,8 @@ Node* find(DoubleList& list, int value) {
     return nullptr;
 }
 
-void printList(DoubleList& list) {
-    Node* temp = list.head;
+void printList2(DoubleList& list) {
+    NodeL* temp = list.head;
     while (temp != nullptr) {
         cout << temp->data << " ";
         temp = temp->next;
@@ -121,23 +122,67 @@ int main() {
     list.head = nullptr;
     list.tail = nullptr;
 
-    addToHead(list, 10);
-    addToTail(list, 20);
-    addToHead(list, 5);
-    printList(list);
+    string command;
+    int value;
 
-    removeFromHead(list);
-    printList(list);
+    cout << "Enter a command (addhead, addtail, removehead, removetail, removevalue, find, print, exit):" << endl;
 
-    removeByValue(list, 20);
-    printList(list);
+    while (true) {
+        cout << "> ";
+        getline(cin, command);
 
-    addToTail(list, 30);
-    addToTail(list, 40);
-    printList(list);
+        stringstream ss(command);
+        string action;
+        ss >> action;
 
-    removeFromTail(list);
-    printList(list);
+        if (action == "addhead") {
+            ss >> value;
+            if (!ss.fail()) {
+                addToHeadL2(list, value);
+                cout << "Added to head: " << value << endl;
+            } else {
+                cout << "Invalid input. Usage: addhead <value>" << endl;
+            }
+        } else if (action == "addtail") {
+            ss >> value;
+            if (!ss.fail()) {
+                addToTailL2(list, value);
+                cout << "Added to tail: " << value << endl;
+            } else {
+                cout << "Invalid input. Usage: addtail <value>" << endl;
+            }
+        } else if (action == "removehead") {
+            removeFromHeadL2(list);
+            cout << "Head removed" << endl;
+        } else if (action == "removetail") {
+            removeFromTailL2(list);
+            cout << "Tail removed" << endl;
+        } else if (action == "removevalue") {
+            ss >> value;
+            if (!ss.fail()) {
+                removeByValueL2(list, value);
+                cout << "Removed value: " << value << endl;
+            } else {
+                cout << "Invalid input. Usage: removevalue <value>" << endl;
+            }
+        } else if (action == "find") {
+            ss >> value;
+            if (!ss.fail()) {
+                NodeL* result = findL2(list, value);
+                cout << (result ? "Found" : "Not found") << endl;
+            } else {
+                cout << "Invalid input. Usage: find <value>" << endl;
+            }
+        } else if (action == "print") {
+            cout << "List content: ";
+            printList2(list);
+        } else if (action == "exit") {
+            cout << "Exiting..." << endl;
+            break;
+        } else {
+            cout << "Unknown command. Available commands: addhead, addtail, removehead, removetail, removevalue, find, print, exit." << endl;
+        }
+    }
 
     return 0;
 }

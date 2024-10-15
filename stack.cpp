@@ -1,29 +1,30 @@
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
-struct Node {
+struct NodeS {
     int data;
-    Node* next;
+    NodeS* next;
 };
 
 struct Stack {
-    Node* top;
+    NodeS* top;
 };
 
-void push(Stack& stack, int value) {
-    Node* newNode = new Node(); 
+void pushStack(Stack& stack, int value) {
+    NodeS* newNode = new NodeS(); 
     newNode->data = value;
     newNode->next = stack.top;   // Новый узел указывает на текущую вершину
     stack.top = newNode;         // Новый узел становится вершиной
 }
 
-void pop(Stack& stack) {
+void popStack(Stack& stack) {
     if (stack.top == nullptr) {
         cout << "Стек пуст" << endl;
         return;
     }
-    Node* temp = stack.top;
+    NodeS* temp = stack.top;
     stack.top = stack.top->next;
     delete temp;
 }
@@ -33,7 +34,7 @@ void printStack(Stack& stack) {
         cout << "Стек пуст" << endl;
         return;
     }
-    Node* temp = stack.top;
+    NodeS* temp = stack.top;
     cout << "Элементы стека: ";
     while (temp != nullptr) {
         cout << temp->data << " ";
@@ -46,19 +47,38 @@ int main() {
     Stack stack;
     stack.top = nullptr;
 
-    push(stack, 10);
-    push(stack, 20);
-    push(stack, 30);
+    string command;
+    int value;
 
-    printStack(stack);
+    cout << "Введите команду (push, pop, print, exit):" << endl;
 
-    pop(stack);
+    while (true) {
+        cout << "> ";
+        getline(cin, command);
 
-    printStack(stack);
+        stringstream ss(command);
+        string action;
+        ss >> action;
 
-    pop(stack);
-    pop(stack);
-    pop(stack); // Попытка удалить элемент из пустого стека
+        if (action == "push") {
+            ss >> value;
+            if (!ss.fail()) {
+                pushStack(stack, value);
+                cout << "Элемент " << value << " добавлен в стек." << endl;
+            } else {
+                cout << "Неверный ввод. Используйте: push <value>" << endl;
+            }
+        } else if (action == "pop") {
+            popStack(stack);
+        } else if (action == "print") {
+            printStack(stack);
+        } else if (action == "exit") {
+            cout << "Выход..." << endl;
+            break;
+        } else {
+            cout << "Неизвестная команда. Доступные команды: push, pop, print, exit." << endl;
+        }
+    }
 
     return 0;
 }

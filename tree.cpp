@@ -1,37 +1,39 @@
 #include <iostream>
+#include <sstream>
+
 using namespace std;
 
 // Структура узла АВЛ-дерева
-struct Node {
+struct NodeT {
     int key;
     int height;
-    Node* left;
-    Node* right;
+    NodeT* left;
+    NodeT* right;
 
-    Node(int k) : key(k), height(1), left(nullptr), right(nullptr) {}
+    NodeT(int k) : key(k), height(1), left(nullptr), right(nullptr) {}
 };
 
 // Функция для получения высоты узла
-int height(Node* n) {
+int heightTree(NodeT* n) {
     return n ? n->height : 0;
 }
 
 // Функция для получения баланса узла
-int getBalance(Node* n) {
-    return n ? height(n->left) - height(n->right) : 0;
+int getBalance(NodeT* n) {
+    return n ? heightTree(n->left) - heightTree(n->right) : 0;
 }
 
 // Функция для обновления высоты узла
-void updateHeight(Node* n) {
+void updateHeight(NodeT* n) {
     if (n) {
-        n->height = 1 + max(height(n->left), height(n->right));
+        n->height = 1 + max(heightTree(n->left), heightTree(n->right));
     }
 }
 
 // Правое вращение вокруг узла y
-Node* rotateRight(Node* y) {
-    Node* x = y->left;
-    Node* T2 = x->right;
+NodeT* rotateRight(NodeT* y) {
+    NodeT* x = y->left;
+    NodeT* T2 = x->right;
 
     x->right = y;
     y->left = T2;
@@ -43,9 +45,9 @@ Node* rotateRight(Node* y) {
 }
 
 // Левое вращение вокруг узла x
-Node* rotateLeft(Node* x) {
-    Node* y = x->right;
-    Node* T2 = y->left;
+NodeT* rotateLeft(NodeT* x) {
+    NodeT* y = x->right;
+    NodeT* T2 = y->left;
 
     y->left = x;
     x->right = T2;
@@ -57,13 +59,13 @@ Node* rotateLeft(Node* x) {
 }
 
 // Вставка узла в АВЛ-дерево
-Node* insert(Node* node, int key) {
-    if (!node) return new Node(key);
+NodeT* insertTree(NodeT* node, int key) {
+    if (!node) return new NodeT(key);
 
     if (key < node->key) {
-        node->left = insert(node->left, key);
+        node->left = insertTree(node->left, key);
     } else if (key > node->key) {
-        node->right = insert(node->right, key);
+        node->right = insertTree(node->right, key);
     } else {
         return node;  // Дубликаты не допускаются
     }
@@ -99,21 +101,21 @@ Node* insert(Node* node, int key) {
 }
 
 // Поиск узла по ключу
-Node* search(Node* root, int key) {
+NodeT* searchTree(NodeT* root, int key) {
     if (!root || root->key == key) {
         return root;
     }
 
     if (key < root->key) {
-        return search(root->left, key);
+        return searchTree(root->left, key);
     }
 
-    return search(root->right, key);
+    return searchTree(root->right, key);
 }
 
 // Функция для нахождения узла с минимальным значением
-Node* minValueNode(Node* node) {
-    Node* current = node;
+NodeT* minValueNode(NodeT* node) {
+    NodeT* current = node;
     while (current->left != nullptr) {
         current = current->left;
     }
@@ -121,17 +123,17 @@ Node* minValueNode(Node* node) {
 }
 
 // Удаление узла из АВЛ-дерева
-Node* deleteNode(Node* root, int key) {
+NodeT* deleteNodeT(NodeT* root, int key) {
     if (!root) return root;
 
     if (key < root->key) {
-        root->left = deleteNode(root->left, key);
+        root->left = deleteNodeT(root->left, key);
     } else if (key > root->key) {
-        root->right = deleteNode(root->right, key);
+        root->right = deleteNodeT(root->right, key);
     } else {
         // Узел найден
         if (!root->left || !root->right) {
-            Node* temp = root->left ? root->left : root->right;
+            NodeT* temp = root->left ? root->left : root->right;
 
             if (!temp) {
                 temp = root;
@@ -141,9 +143,9 @@ Node* deleteNode(Node* root, int key) {
             }
             delete temp;
         } else {
-            Node* temp = minValueNode(root->right);
+            NodeT* temp = minValueNode(root->right);
             root->key = temp->key;
-            root->right = deleteNode(root->right, temp->key);
+            root->right = deleteNodeT(root->right, temp->key);
         }
     }
 
@@ -179,7 +181,7 @@ Node* deleteNode(Node* root, int key) {
 }
 
 // Обход дерева в порядке возрастания
-void inOrder(Node* root) {
+void inOrder(NodeT* root) {
     if (root) {
         inOrder(root->left);
         cout << root->key << " ";
@@ -188,32 +190,61 @@ void inOrder(Node* root) {
 }
 
 int main() {
-    Node* root = nullptr;
+    NodeT* root = nullptr;
+    string command;
+    int value;
 
-    // Вставка элементов
-    root = insert(root, 10);
-    root = insert(root, 20);
-    root = insert(root, 30);
-    root = insert(root, 40);
-    root = insert(root, 50);
-    root = insert(root, 25);
+    cout << "Введите команду (insert, delete, search, print, exit):" << endl;
 
-    cout << "In-order traversal of the constructed AVL tree is: ";
-    inOrder(root);
-    cout << endl;
+    while (true) {
+        cout << "> ";
+        getline(cin, command);
 
-    // Удаление узла
-    root = deleteNode(root, 20);
-    cout << "In-order traversal after deletion of 20: ";
-    inOrder(root);
-    cout << endl;
+        stringstream ss(command);
+        string action;
+        ss >> action;
 
-    // Поиск узла
-    Node* result = search(root, 30);
-    if (result) {
-        cout << "Element 30 found in the tree." << endl;
-    } else {
-        cout << "Element 30 not found in the tree." << endl;
+        if (action == "insert") {
+            ss >> value;
+            if (!ss.fail()) {
+                root = insertTree(root, value);
+                cout << "Элемент " << value << " добавлен." << endl;
+            } else {
+                cout << "Неверный ввод. Используйте: insert <value>" << endl;
+            }
+        } else if (action == "delete") {
+            ss >> value;
+            if (!ss.fail()) {
+                root = deleteNodeT(root, value);
+                cout << "Элемент " << value << " удален." << endl;
+            } else {
+                cout << "Неверный ввод. Используйте: delete <value>" << endl;
+            }
+        } else if (action == "search") {
+            if (ss >> value) {  // Проверяем, был ли введен аргумент
+                NodeT* result = searchTree(root, value);
+                if (result) {
+                    cout << "Элемент " << value << " найден." << endl;
+                } else {
+                    cout << "Элемент " << value << " не найден." << endl;
+                }
+            } 
+            else {
+                cout << "Неверный ввод. Используйте: search <value>" << endl;
+            }
+        } 
+        else if (action == "print") {
+            cout << "Обход дерева in-order: ";
+            inOrder(root);
+            cout << endl;
+        } 
+        else if (action == "exit") {
+            cout << "Выход..." << endl;
+            break;
+        } 
+        else {
+            cout << "Неизвестная команда. Доступные команды: insert, delete, search, print, exit." << endl;
+        }
     }
 
     return 0;

@@ -1,26 +1,27 @@
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
-struct Node {
+struct NodeQ {
     int data;
-    Node* next;
+    NodeQ* next;
 };
 
 struct Queue {
-    Node* head;
-    Node* tail;
+    NodeQ* head;
+    NodeQ* tail;
 };
 
-Node* createNode(int val) {
-    Node* newNode = new Node;
+NodeQ* createNodeQ(int val) {
+    NodeQ* newNode = new NodeQ;
     newNode->data = val;
     newNode->next = nullptr;  // Инициализируем указатель на следующий узел
     return newNode;
 }
 
 void enqueue(Queue& q, int item) {
-    Node* newNode = createNode(item);
+    NodeQ* newNode = createNodeQ(item);
     if (q.tail == nullptr) {
         q.head = q.tail = newNode;
         return;
@@ -34,7 +35,7 @@ int dequeue(Queue& q) {
         cout << "Очередь пуста" << endl;
         return -1;
     }
-    Node* temp = q.head;
+    NodeQ* temp = q.head;
     int item = q.head->data;
     q.head = q.head->next;
     if (q.head == nullptr) {
@@ -49,7 +50,7 @@ void printQueue (Queue& q) {
         cout << "Очередь пуста" << endl;
         return;
     }
-    Node* temp = q.head;
+    NodeQ* temp = q.head;
     cout << "Очередь: ";
     while (temp != nullptr) {
         cout << temp->data << " ";
@@ -59,22 +60,44 @@ void printQueue (Queue& q) {
 }
 
 int main() {
-    Queue q; // Создаем очередь
-    q.head = q.tail = nullptr; // Инициализируем указатели на первый и последний элементы
+    Queue q;
+    q.head = q.tail = nullptr;
 
-    enqueue(q, 10);
-    enqueue(q, 20);
-    enqueue(q, 30);
-    
-    printQueue(q);
+    string command;
+    int value;
 
-    dequeue(q);
-    dequeue(q);
+    cout << "Введите команду (enqueue, dequeue, print, exit):" << endl;
 
-    printQueue(q);
+    while (true) {
+        cout << "> ";
+        getline(cin, command);
 
-    dequeue(q); // Удаляем последний элемент
-    dequeue(q); // Попытка удалить из пустой очереди
+        stringstream ss(command);
+        string action;
+        ss >> action;
+
+        if (action == "enqueue") {
+            ss >> value;
+            if (!ss.fail()) {
+                enqueue(q, value);
+                cout << "Элемент " << value << " добавлен в очередь." << endl;
+            } else {
+                cout << "Неверный ввод. Используйте: enqueue <value>" << endl;
+            }
+        } else if (action == "dequeue") {
+            int result = dequeue(q);
+            if (result != -1) {
+                cout << "Удален элемент: " << result << endl;
+            }
+        } else if (action == "print") {
+            printQueue(q);
+        } else if (action == "exit") {
+            cout << "Выход..." << endl;
+            break;
+        } else {
+            cout << "Неизвестная команда. Доступные команды: enqueue, dequeue, print, exit." << endl;
+        }
+    }
 
     return 0;
 }
