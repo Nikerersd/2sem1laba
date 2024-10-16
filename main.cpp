@@ -1,78 +1,74 @@
 #include <iostream>
+#include <fstream>
 #include <sstream>
+#include <string>
+#include "hashtable.h"
+#include "List1.h"
+#include "List2.h"
+#include "massive.h"
+#include "queue.h"
+#include "stack.h"
+#include "tree.h"
+
 
 using namespace std;
 
-void hashtableCmds(HashTable& hashTable) {
-    HashTable* hashTable[TABLE_SIZE] = {nullptr}; // Инициализация пустой хеш-таблицы
-
+void hashtableCmds(HashTable* hashTable[]) {
     string command;
     string key, value;
 
-    cout << "Enter a command (insert, get, remove, print, clear, exit):" << endl;
+    cout << "Введите команду (INSERT, GET, REMOVE, PRINT, EXIT):" << endl;
 
-    // Основной цикл для ввода команд
     while (true) {
         cout << "> ";
         getline(cin, command);
 
-        // Используем строковый поток для разделения команды на части
         stringstream ss(command);
         string action;
         ss >> action;
 
-        if (action == "insert") {
-            // Чтение ключа и значения для вставки
+        if (action == "INSERT") {
             if (ss >> key >> value && !key.empty() && !value.empty()) {
                 insertTable(hashTable, key, value);
-                cout << "Inserted [" << key << ": " << value << "]" << endl;
-            } else {
-                cout << "Invalid input. Usage: insert <key> <value>" << endl;
+                writeHashTableToFile(hashTable, "hashtable.txt");
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: INSERT <ключ> <значение>" << endl;
             }
         } 
-        else if (action == "get") {
-            // Чтение ключа для получения значения
+        else if (action == "GET") {
             if (ss >> key && !key.empty()) {
-                cout << "Value: " << getValueTable(hashTable, key) << endl;
+                cout << "Значение: " << getValueTable(hashTable, key) << endl;
             } else {
-                cout << "Invalid input. Usage: get <key>" << endl;
+                cout << "> Неверный ввод. Необходимо ввести: GET <ключ>" << endl;
             }
         }
-        else if (action == "remove") {
-            // Чтение ключа для удаления
+        else if (action == "REMOVE") {
             if (ss >> key && !key.empty()) {
                 removeValueTable(hashTable, key);
-            } else {
-                cout << "Invalid input. Usage: remove <key>" << endl;
+                writeHashTableToFile(hashTable, "hashtable.txt");
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: REMOVE <ключ>" << endl;
             }
         } 
-        else if (action == "print") {
-            // Печать всей таблицы
+        else if (action == "PRINT") {
             printTable(hashTable);
-        } 
-        else if (action == "clear") {
-            // Очистка таблицы
-            freeTable(hashTable);
-            cout << "Hash table cleared." << endl;
-        } 
-        else if (action == "exit") {
-            // Выход из программы
-            freeTable(hashTable);
-            cout << "Exiting..." << endl;
+        }
+        else if (action == "EXIT") {
             break;
         } 
         else {
-            cout << "Unknown command. Available commands: insert, get, remove, print, clear, exit." << endl;
+            cout << "> Неизвестная команда. Допутимые команды: INSERT, GET, REMOVE, PRINT, EXIT." << endl;
         }
     }
 }
 
 void list1Cmds (ListOne*& head) {
-    ListOne* head = nullptr;
     string command;
     int value;
 
-    cout << "Enter a command (addhead, addtail, removehead, removetail, removevalue, search, print, clear, exit):" << endl;
+    cout << "Введите команду (ADDHEAD, ADDTAIL, REMOVEHEAD, REMOVETAIL, REMOVEVALUE, SEARCH, PRINT, EXIT):" << endl;
 
     while (true) {
         cout << "> ";
@@ -82,69 +78,74 @@ void list1Cmds (ListOne*& head) {
         string action;
         ss >> action;
 
-        if (action == "addhead") {
+        if (action == "ADDHEAD") {
             ss >> value;
             if (!ss.fail()) {
                 addToHeadL1(head, value);
-                cout << "Added to head: " << value << endl;
+                writeListToFile(head, "list1.txt");
             } else {
-                cout << "Invalid input. Usage: addhead <value>" << endl;
+                cout << "> Неверный ввод. Необходимо ввести: ADDHEAD <значение>" << endl;
             }
-        } else if (action == "addtail") {
+        } 
+        else if (action == "ADDTAIL") {
             ss >> value;
             if (!ss.fail()) {
                 addToTailL1(head, value);
-                cout << "Added to tail: " << value << endl;
-            } else {
-                cout << "Invalid input. Usage: addtail <value>" << endl;
+                writeListToFile(head, "list1.txt");
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: ADDTAIL <значение>" << endl;
             }
-        } else if (action == "removehead") {
+        } 
+        else if (action == "REMOVEHEAD") {
             removeHeadL1(head);
-            cout << "Head removed" << endl;
-        } else if (action == "removetail") {
+            writeListToFile(head, "list1.txt");
+        } 
+        else if (action == "REMOVETAIL") {
             removeTailL1(head);
-            cout << "Tail removed" << endl;
-        } else if (action == "removevalue") {
+            writeListToFile(head, "list1.txt");
+        } 
+        else if (action == "REMOVEVALUE") {
             ss >> value;
             if (!ss.fail()) {
                 removeByValueL1(head, value);
-                cout << "Removed value: " << value << endl;
-            } else {
-                cout << "Invalid input. Usage: removevalue <value>" << endl;
+                writeListToFile(head, "list1.txt");
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: REMOVEVALUE <значение>" << endl;
             }
-        } else if (action == "search") {
+        } 
+        else if (action == "SEARCH") {
             ss >> value;
             if (!ss.fail()) {
-                cout << "Search result for " << value << ": " 
-                     << (searchL1(head, value) ? "Found" : "Not found") << endl;
-            } else {
-                cout << "Invalid input. Usage: search <value>" << endl;
+                cout << "Результат поиска для значения " << value << ": " 
+                     << (searchL1(head, value) ? "Найдено" : "Не найдено") << endl;
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: SEARCH <значение>" << endl;
             }
-        } else if (action == "print") {
-            cout << "List content: ";
+        } 
+        else if (action == "PRINT") {
+            cout << "Содержимое списка: ";
             printList1(head);
-        } else if (action == "clear") {
-            clearList1(head);
-            cout << "List cleared" << endl;
-        } else if (action == "exit") {
-            clearList1(head);
-            cout << "Exiting..." << endl;
+        } 
+        else if (action == "EXIT") {
             break;
-        } else {
-            cout << "Unknown command. Available commands: addhead, addtail, removehead, removetail, removevalue, search, print, clear, exit." << endl;
+        } 
+        else {
+            cout << "> Неизвестная команда. Допутимые команды: ADDHEAD, ADDTAIL, REMOVEHEAD, REMOVETAIL, REMOVEVALUE, SEARCH, PRINT, EXIT." << endl;
         }
     }
 }
 
-void list2Cmds (DoubleList*& list) {
-    DoubleList list;
+void list2Cmds (DoubleList& list) {
     list.head = nullptr;
     list.tail = nullptr;
 
     string command;
     int value;
 
-    cout << "Enter a command (addhead, addtail, removehead, removetail, removevalue, find, print, exit):" << endl;
+    cout << "Введите команду (ADDHEAD, ADDTAIL, REMOVEHEAD, REMOVETAIL, REMOVEVALUE, FIND, PRINT, EXIT):" << endl;
 
     while (true) {
         cout << "> ";
@@ -154,64 +155,74 @@ void list2Cmds (DoubleList*& list) {
         string action;
         ss >> action;
 
-        if (action == "addhead") {
+        if (action == "ADDHEAD") {
             ss >> value;
             if (!ss.fail()) {
                 addToHeadL2(list, value);
-                cout << "Added to head: " << value << endl;
-            } else {
-                cout << "Invalid input. Usage: addhead <value>" << endl;
+                writeDoubleListToFile(list, "list2.txt");
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: ADDHEAD <значение>" << endl;
             }
-        } else if (action == "addtail") {
+        } 
+        else if (action == "ADDTAIL") {
             ss >> value;
             if (!ss.fail()) {
                 addToTailL2(list, value);
-                cout << "Added to tail: " << value << endl;
-            } else {
-                cout << "Invalid input. Usage: addtail <value>" << endl;
+                writeDoubleListToFile(list, "list2.txt");
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: addtail <value>" << endl;
             }
-        } else if (action == "removehead") {
+        } 
+        else if (action == "REMOVEHEAD") {
             removeFromHeadL2(list);
-            cout << "Head removed" << endl;
-        } else if (action == "removetail") {
+            writeDoubleListToFile(list, "list2.txt");
+        } 
+        else if (action == "REMOVETAIL") {
             removeFromTailL2(list);
-            cout << "Tail removed" << endl;
-        } else if (action == "removevalue") {
+            writeDoubleListToFile(list, "list2.txt");
+        } 
+        else if (action == "REMOVEVALUE") {
             ss >> value;
             if (!ss.fail()) {
                 removeByValueL2(list, value);
-                cout << "Removed value: " << value << endl;
-            } else {
-                cout << "Invalid input. Usage: removevalue <value>" << endl;
+                writeDoubleListToFile(list, "list2.txt");
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: REMOVEVALUE <значение>" << endl;
             }
-        } else if (action == "find") {
+        } 
+        else if (action == "FIND") {
             ss >> value;
             if (!ss.fail()) {
                 NodeL* result = findL2(list, value);
-                cout << (result ? "Found" : "Not found") << endl;
-            } else {
-                cout << "Invalid input. Usage: find <value>" << endl;
+                cout << "Результат поиска для значения " << value << ": " 
+                     << (result ? "Найдено" : "Не найдено") << endl;
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: FIND <значение>" << endl;
             }
-        } else if (action == "print") {
-            cout << "List content: ";
+        } 
+        else if (action == "PRINT") {
+            cout << "Содержимое списка: ";
             printList2(list);
-        } else if (action == "exit") {
-            cout << "Exiting..." << endl;
+        } 
+        else if (action == "EXIT") {
             break;
-        } else {
-            cout << "Unknown command. Available commands: addhead, addtail, removehead, removetail, removevalue, find, print, exit." << endl;
+        } 
+        else {
+            cout << "> Неизвестная команда. Допутимые команды: ADDHEAD, ADDTAIL, REMOVEHEAD, REMOVETAIL, REMOVEVALUE, FIND, PRINT, EXIT." << endl;
         }
     }
 }
 
-void arrayCmds (Array*& arr) {
-    Array arr;
-    initArray(arr, 2);
+void arrayCmds (Array& arr) {
 
     string command;
     int index, value;
 
-    cout << "Enter a command (append, insert, remove, replace, get, display, length, exit):" << endl;
+    cout << "Введите команду (APPEND, INSERT, REMOVE, REPLACE, GET, DISPLAY, LENGTH, EXIT):" << endl;
 
     while (true) {
         cout << "> ";
@@ -221,72 +232,81 @@ void arrayCmds (Array*& arr) {
         string action;
         ss >> action;
 
-        if (action == "append") {
+        if (action == "APPEND") {
             ss >> value;
             if (!ss.fail()) {
                 appendArray(arr, value);
-                cout << "Appended: " << value << endl;
-            } else {
-                cout << "Invalid input. Usage: append <value>" << endl;
+                writeArrayToFile(arr, "array.txt");
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: APPEND <значение>" << endl;
             }
-        } else if (action == "insert") {
+        } 
+        else if (action == "INSERT") {
             ss >> index >> value;
             if (!ss.fail()) {
                 insertArray(arr, index, value);
-                cout << "Inserted " << value << " at index " << index << endl;
-            } else {
-                cout << "Invalid input. Usage: insert <index> <value>" << endl;
+                writeArrayToFile(arr, "array.txt");
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: insert <индекс> <значение>" << endl;
             }
-        } else if (action == "remove") {
+        } 
+        else if (action == "REMOVE") {
             ss >> index;
             if (!ss.fail()) {
                 removeArray(arr, index);
-                cout << "Removed element at index " << index << endl;
-            } else {
-                cout << "Invalid input. Usage: remove <index>" << endl;
+                writeArrayToFile(arr, "array.txt");
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: REMOVE <индекс>" << endl;
             }
-        } else if (action == "replace") {
+        } 
+        else if (action == "REPLACE") {
             ss >> index >> value;
             if (!ss.fail()) {
                 replaceArray(arr, index, value);
-                cout << "Replaced element at index " << index << " with " << value << endl;
-            } else {
-                cout << "Invalid input. Usage: replace <index> <value>" << endl;
+                writeArrayToFile(arr, "array.txt");
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: REPLACE <индекс> <значение>" << endl;
             }
-        } else if (action == "get") {
+        } 
+        else if (action == "GET") {
             ss >> index;
             if (!ss.fail()) {
                 int result = getArray(arr, index);
                 if (result != -1) {
-                    cout << "Element at index " << index << ": " << result << endl;
+                    cout << "Элемент по индексу " << index << ": " << result << endl;
                 }
-            } else {
-                cout << "Invalid input. Usage: get <index>" << endl;
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: GET <индекс>" << endl;
             }
-        } else if (action == "display") {
-            cout << "Array content: ";
+        } 
+        else if (action == "DISPLAY") {
+            cout << "Содержимое массива: ";
             displayArray(arr);
-        } else if (action == "length") {
-            cout << "Array length: " << lengthArray(arr) << endl;
-        } else if (action == "exit") {
-            cout << "Exiting..." << endl;
+        } 
+        else if (action == "LENGTH") {
+            cout << "Длина массива: " << lengthArray(arr) << endl;
+        } 
+        else if (action == "EXIT") {
             break;
-        } else {
-            cout << "Unknown command. Available commands: append, insert, remove, replace, get, display, length, exit." << endl;
+        } 
+        else {
+            cout << "> Неизвестная команда. Допутимые команды: APPEND, INSERT, REMOVE, REPLACE, GET, DISPLAY, LENGTH, EXIT." << endl;
         }
     }
-
-    destroyArray(arr);
 }
 
 void queueCmds (Queue& q) {
-    Queue q;
     q.head = q.tail = nullptr;
 
     string command;
     int value;
 
-    cout << "Введите команду (enqueue, dequeue, print, exit):" << endl;
+    cout << "Введите команду (ENQUEUE, DEQUEUE, PRINT, EXIT):" << endl;
 
     while (true) {
         cout << "> ";
@@ -296,38 +316,39 @@ void queueCmds (Queue& q) {
         string action;
         ss >> action;
 
-        if (action == "enqueue") {
+        if (action == "ENQUEUE") {
             ss >> value;
             if (!ss.fail()) {
                 enqueue(q, value);
-                cout << "Элемент " << value << " добавлен в очередь." << endl;
-            } else {
-                cout << "Неверный ввод. Используйте: enqueue <value>" << endl;
+                writeQueueToFile(q, "queue.txt");
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: ENQUEUE <значение>" << endl;
             }
-        } else if (action == "dequeue") {
+        } 
+        else if (action == "DEQUEUE") {
             int result = dequeue(q);
-            if (result != -1) {
-                cout << "Удален элемент: " << result << endl;
-            }
-        } else if (action == "print") {
+            writeQueueToFile(q, "queue.txt");
+        } 
+        else if (action == "PRINT") {
             printQueue(q);
-        } else if (action == "exit") {
-            cout << "Выход..." << endl;
+        } 
+        else if (action == "EXIT") {
             break;
-        } else {
-            cout << "Неизвестная команда. Доступные команды: enqueue, dequeue, print, exit." << endl;
+        } 
+        else {
+            cout << "> Неизвестная команда. Допутимые команды: ENQUEUE, DEQUEUE, PRINT, EXIT." << endl;
         }
     }
 }
 
 void stackCmds (Stack& stack) {
-    Stack stack;
     stack.top = nullptr;
 
     string command;
     int value;
 
-    cout << "Введите команду (push, pop, print, exit):" << endl;
+    cout << "Введите команду (PUSH, POP, PRINT, EXIT):" << endl;
 
     while (true) {
         cout << "> ";
@@ -337,33 +358,36 @@ void stackCmds (Stack& stack) {
         string action;
         ss >> action;
 
-        if (action == "push") {
+        if (action == "PUSH") {
             ss >> value;
             if (!ss.fail()) {
                 pushStack(stack, value);
-                cout << "Элемент " << value << " добавлен в стек." << endl;
+                writeStackToFile(stack, "stack.txt");
             } else {
-                cout << "Неверный ввод. Используйте: push <value>" << endl;
+                cout << "> Неверный ввод. Необходимо ввести: PUSH <значение>" << endl;
             }
-        } else if (action == "pop") {
+        } 
+        else if (action == "POP") {
             popStack(stack);
-        } else if (action == "print") {
+            writeStackToFile(stack, "stack.txt");
+        } 
+        else if (action == "PRINT") {
             printStack(stack);
-        } else if (action == "exit") {
-            cout << "Выход..." << endl;
+        } 
+        else if (action == "EXIT") {
             break;
-        } else {
-            cout << "Неизвестная команда. Доступные команды: push, pop, print, exit." << endl;
+        } 
+        else {
+            cout << "> Неизвестная команда. Допутимые команды: PUSH, POP, PRINT, EXIT." << endl;
         }
     }
 }
 
 void treeCmds (NodeT*& root) {
-    NodeT* root = nullptr;
     string command;
     int value;
 
-    cout << "Введите команду (insert, delete, search, print, exit):" << endl;
+    cout << "Введите команду (INSERT, DELETE, SEARCH, PRINT, EXIT):" << endl;
 
     while (true) {
         cout << "> ";
@@ -373,50 +397,103 @@ void treeCmds (NodeT*& root) {
         string action;
         ss >> action;
 
-        if (action == "insert") {
+        if (action == "INSERT") {
             ss >> value;
             if (!ss.fail()) {
                 root = insertTree(root, value);
-                cout << "Элемент " << value << " добавлен." << endl;
-            } else {
-                cout << "Неверный ввод. Используйте: insert <value>" << endl;
+                writeAVLTreeToFile(root, "tree.txt");
             }
-        } else if (action == "delete") {
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: INSERT <значение>" << endl;
+            }
+        } 
+        else if (action == "DELETE") {
             ss >> value;
             if (!ss.fail()) {
                 root = deleteNodeT(root, value);
-                cout << "Элемент " << value << " удален." << endl;
-            } else {
-                cout << "Неверный ввод. Используйте: delete <value>" << endl;
-            }
-        } else if (action == "search") {
-            if (ss >> value) {  // Проверяем, был ли введен аргумент
-                NodeT* result = searchTree(root, value);
-                if (result) {
-                    cout << "Элемент " << value << " найден." << endl;
-                } else {
-                    cout << "Элемент " << value << " не найден." << endl;
-                }
+                writeAVLTreeToFile(root, "tree.txt");
             } 
             else {
-                cout << "Неверный ввод. Используйте: search <value>" << endl;
+                cout << "> Неверный ввод. Необходимо ввести: DELETE <значение>" << endl;
             }
         } 
-        else if (action == "print") {
-            cout << "Обход дерева in-order: ";
-            inOrder(root);
+        else if (action == "SEARCH") {
+            if (ss >> value) {
+                NodeT* result = searchTree(root, value);
+                cout << "Результат поиска для значения " << value << ": " 
+                     << (result ? "Найдено" : "Не найдено") << endl;
+            } 
+            else {
+                cout << "> Неверный ввод. Необходимо ввести: SEARCH <значение>" << endl;
+            }
+        } 
+        else if (action == "PRINT") {
+            printTree(root);
             cout << endl;
         } 
-        else if (action == "exit") {
-            cout << "Выход..." << endl;
+        else if (action == "EXIT") {
             break;
         } 
         else {
-            cout << "Неизвестная команда. Доступные команды: insert, delete, search, print, exit." << endl;
+            cout << "> Неизвестная команда. Допутимые команды: INSERT, DELETE, SEARCH, PRINT, EXIT." << endl;
         }
     }
 }
 
 int main() {
+    HashTable* hashTable[TABLE_SIZE] = {nullptr}; // Инициализация пустой хеш-таблицы
+    ListOne* head = nullptr;
+    DoubleList list;
+    Array arr;
+    initArray(arr, 2);
+    Queue q;
+    Stack stack;
+    NodeT* root = nullptr;
 
+    string command;
+
+    cout << "> Выберите структуру данных (HASHTABLE, LIST1, LIST2, ARRAY, QUEUE, STACK, AVLTREE, EXIT):" << endl;
+
+    while (true) {
+        cout << "> ";
+        getline(cin, command);
+
+        if (command == "HASHTABLE") {
+            hashtableCmds(hashTable);
+        } 
+        else if (command == "LIST1") {
+            list1Cmds(head);
+        } 
+        else if (command == "LIST2") {
+            list2Cmds(list);
+        } 
+        else if (command == "ARRAY") {
+            arrayCmds(arr);
+        } 
+        else if (command == "QUEUE") {
+            queueCmds(q);
+        } 
+        else if (command == "STACK") {
+            stackCmds(stack);
+        } 
+        else if (command == "AVLTREE") {
+            treeCmds(root);
+        } 
+        else if (command == "EXIT") {
+            break;
+        } 
+        else {
+            cout << "> Неизвестная команда. Доступные команды: HASHTABLE, LIST1, LIST2, ARRAY, QUEUE, STACK, AVLTREE, EXIT." << endl;
+        }
+    }
+
+    freeTable(hashTable);
+    freeList1(head);
+    freeList2(list);
+    freeArray(arr);
+    freeQueue(q);
+    freeStack(stack);
+    freeTree(root);
+
+    return 0;
 }

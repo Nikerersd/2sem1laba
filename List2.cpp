@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -117,72 +118,30 @@ void printList2(DoubleList& list) {
     cout << endl;
 }
 
-int main() {
-    DoubleList list;
+void freeList2(DoubleList& list) {
+    NodeL* current = list.head;
+    while (current != nullptr) {
+        NodeL* toDelete = current;
+        current = current->next;
+        delete toDelete;
+    }
     list.head = nullptr;
     list.tail = nullptr;
+}
 
-    string command;
-    int value;
+void writeDoubleListToFile(const DoubleList& list, const string& filename) {
+    ofstream file(filename);
 
-    cout << "Enter a command (addhead, addtail, removehead, removetail, removevalue, find, print, exit):" << endl;
-
-    while (true) {
-        cout << "> ";
-        getline(cin, command);
-
-        stringstream ss(command);
-        string action;
-        ss >> action;
-
-        if (action == "addhead") {
-            ss >> value;
-            if (!ss.fail()) {
-                addToHeadL2(list, value);
-                cout << "Added to head: " << value << endl;
-            } else {
-                cout << "Invalid input. Usage: addhead <value>" << endl;
-            }
-        } else if (action == "addtail") {
-            ss >> value;
-            if (!ss.fail()) {
-                addToTailL2(list, value);
-                cout << "Added to tail: " << value << endl;
-            } else {
-                cout << "Invalid input. Usage: addtail <value>" << endl;
-            }
-        } else if (action == "removehead") {
-            removeFromHeadL2(list);
-            cout << "Head removed" << endl;
-        } else if (action == "removetail") {
-            removeFromTailL2(list);
-            cout << "Tail removed" << endl;
-        } else if (action == "removevalue") {
-            ss >> value;
-            if (!ss.fail()) {
-                removeByValueL2(list, value);
-                cout << "Removed value: " << value << endl;
-            } else {
-                cout << "Invalid input. Usage: removevalue <value>" << endl;
-            }
-        } else if (action == "find") {
-            ss >> value;
-            if (!ss.fail()) {
-                NodeL* result = findL2(list, value);
-                cout << (result ? "Found" : "Not found") << endl;
-            } else {
-                cout << "Invalid input. Usage: find <value>" << endl;
-            }
-        } else if (action == "print") {
-            cout << "List content: ";
-            printList2(list);
-        } else if (action == "exit") {
-            cout << "Exiting..." << endl;
-            break;
-        } else {
-            cout << "Unknown command. Available commands: addhead, addtail, removehead, removetail, removevalue, find, print, exit." << endl;
-        }
+    if (!file.is_open()) {
+        cerr << "Ошибка при открытии файла для записи" << endl;
+        return;
     }
 
-    return 0;
+    NodeL* temp = list.head;
+    while (temp != nullptr) {
+        file << temp->data << endl;
+        temp = temp->next;
+    }
+
+    file.close();
 }

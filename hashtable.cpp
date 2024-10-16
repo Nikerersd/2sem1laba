@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -113,68 +114,22 @@ void freeTable(HashTable* table[]) {
     }
 }
 
-int main() {
-     HashTable* hashTable[TABLE_SIZE] = {nullptr}; // Инициализация пустой хеш-таблицы
+void writeHashTableToFile(HashTable* table[], const string& filename) {
+    ofstream file(filename);
 
-    string command;
-    string key, value;
-
-    cout << "Enter a command (insert, get, remove, print, clear, exit):" << endl;
-
-    // Основной цикл для ввода команд
-    while (true) {
-        cout << "> ";
-        getline(cin, command);
-
-        // Используем строковый поток для разделения команды на части
-        stringstream ss(command);
-        string action;
-        ss >> action;
-
-        if (action == "insert") {
-            // Чтение ключа и значения для вставки
-            if (ss >> key >> value && !key.empty() && !value.empty()) {
-                insertTable(hashTable, key, value);
-                cout << "Inserted [" << key << ": " << value << "]" << endl;
-            } else {
-                cout << "Invalid input. Usage: insert <key> <value>" << endl;
-            }
-        } 
-        else if (action == "get") {
-            // Чтение ключа для получения значения
-            if (ss >> key && !key.empty()) {
-                cout << "Value: " << getValueTable(hashTable, key) << endl;
-            } else {
-                cout << "Invalid input. Usage: get <key>" << endl;
-            }
-        }
-        else if (action == "remove") {
-            // Чтение ключа для удаления
-            if (ss >> key && !key.empty()) {
-                removeValueTable(hashTable, key);
-            } else {
-                cout << "Invalid input. Usage: remove <key>" << endl;
-            }
-        } 
-        else if (action == "print") {
-            // Печать всей таблицы
-            printTable(hashTable);
-        } 
-        else if (action == "clear") {
-            // Очистка таблицы
-            freeTable(hashTable);
-            cout << "Hash table cleared." << endl;
-        } 
-        else if (action == "exit") {
-            // Выход из программы
-            freeTable(hashTable);
-            cout << "Exiting..." << endl;
-            break;
-        } 
-        else {
-            cout << "Unknown command. Available commands: insert, get, remove, print, clear, exit." << endl;
-        }
+    if (!file.is_open()) {
+        cerr << "Ошибка при открытии файла для записи" << endl;
+        return;
     }
 
-    return 0;
+    for (int i = 0; i < TABLE_SIZE; ++i) {
+        HashTable* temp = table[i];
+        while (temp != nullptr) {
+            file << "[" << temp->key << ": " << temp->value << "] ";
+            temp = temp->next;
+        }
+        file << endl;
+    }
+
+    file.close();
 }

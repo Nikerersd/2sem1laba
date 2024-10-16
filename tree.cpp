@@ -1,5 +1,7 @@
 #include <iostream>
 #include <sstream>
+#include <iomanip>
+#include <fstream>
 
 using namespace std;
 
@@ -180,72 +182,54 @@ NodeT* deleteNodeT(NodeT* root, int key) {
     return root;
 }
 
-// Обход дерева в порядке возрастания
-void inOrder(NodeT* root) {
-    if (root) {
-        inOrder(root->left);
-        cout << root->key << " ";
-        inOrder(root->right);
-    }
+void printTree(NodeT* root, int space = 0, int level = 0) {
+    if (root == nullptr) return;
+
+    space += 5;
+
+    printTree(root->right, space, level + 1);
+
+    cout << endl;
+    cout << setw(space) << root->key << endl;
+
+    printTree(root->left, space, level + 1);
 }
 
-int main() {
-    NodeT* root = nullptr;
-    string command;
-    int value;
+void freeTree(NodeT* root) {
+    if (root == nullptr) return;
 
-    cout << "Введите команду (insert, delete, search, print, exit):" << endl;
+    freeTree(root->left);
+    freeTree(root->right);
 
-    while (true) {
-        cout << "> ";
-        getline(cin, command);
+    delete root;
+}
 
-        stringstream ss(command);
-        string action;
-        ss >> action;
+void writeTreeToFile(NodeT* root, ofstream& file, int space = 0, int level = 0) {
 
-        if (action == "insert") {
-            ss >> value;
-            if (!ss.fail()) {
-                root = insertTree(root, value);
-                cout << "Элемент " << value << " добавлен." << endl;
-            } else {
-                cout << "Неверный ввод. Используйте: insert <value>" << endl;
-            }
-        } else if (action == "delete") {
-            ss >> value;
-            if (!ss.fail()) {
-                root = deleteNodeT(root, value);
-                cout << "Элемент " << value << " удален." << endl;
-            } else {
-                cout << "Неверный ввод. Используйте: delete <value>" << endl;
-            }
-        } else if (action == "search") {
-            if (ss >> value) {  // Проверяем, был ли введен аргумент
-                NodeT* result = searchTree(root, value);
-                if (result) {
-                    cout << "Элемент " << value << " найден." << endl;
-                } else {
-                    cout << "Элемент " << value << " не найден." << endl;
-                }
-            } 
-            else {
-                cout << "Неверный ввод. Используйте: search <value>" << endl;
-            }
-        } 
-        else if (action == "print") {
-            cout << "Обход дерева in-order: ";
-            inOrder(root);
-            cout << endl;
-        } 
-        else if (action == "exit") {
-            cout << "Выход..." << endl;
-            break;
-        } 
-        else {
-            cout << "Неизвестная команда. Доступные команды: insert, delete, search, print, exit." << endl;
-        }
+    if (root == nullptr) return;
+
+    space += 5;
+
+    // Рекурсивный вызов для правого поддерева
+    writeTreeToFile(root->right, file, space, level + 1);
+
+    // Запись текущего узла в файл
+    file << endl;
+    file << setw(space) << root->key << endl;
+
+    // Рекурсивный вызов для левого поддерева
+    writeTreeToFile(root->left, file, space, level + 1);
+}
+
+void writeAVLTreeToFile(NodeT* root, const string& filename) {
+    ofstream file(filename);
+
+    if (!file.is_open()) {
+        cerr << "Ошибка при открытии файла для записи" << endl;
+        return;
     }
 
-    return 0;
+    writeTreeToFile(root, file);
+    
+    file.close();
 }

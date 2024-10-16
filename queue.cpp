@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -59,45 +60,24 @@ void printQueue (Queue& q) {
     cout << endl;
 }
 
-int main() {
-    Queue q;
-    q.head = q.tail = nullptr;
+void freeQueue(Queue& q) {
+    while (q.head != nullptr) {
+        dequeue(q); // Удаляем узлы и освобождаем память
+    }
+}
 
-    string command;
-    int value;
-
-    cout << "Введите команду (enqueue, dequeue, print, exit):" << endl;
-
-    while (true) {
-        cout << "> ";
-        getline(cin, command);
-
-        stringstream ss(command);
-        string action;
-        ss >> action;
-
-        if (action == "enqueue") {
-            ss >> value;
-            if (!ss.fail()) {
-                enqueue(q, value);
-                cout << "Элемент " << value << " добавлен в очередь." << endl;
-            } else {
-                cout << "Неверный ввод. Используйте: enqueue <value>" << endl;
-            }
-        } else if (action == "dequeue") {
-            int result = dequeue(q);
-            if (result != -1) {
-                cout << "Удален элемент: " << result << endl;
-            }
-        } else if (action == "print") {
-            printQueue(q);
-        } else if (action == "exit") {
-            cout << "Выход..." << endl;
-            break;
-        } else {
-            cout << "Неизвестная команда. Доступные команды: enqueue, dequeue, print, exit." << endl;
-        }
+void writeQueueToFile(const Queue& q, const string& filename) {
+    ofstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Ошибка при открытии файла для записи" << endl;
+        return;
     }
 
-    return 0;
+    NodeQ* temp = q.head;
+    while (temp != nullptr) {
+        file << temp->data << endl;
+        temp = temp->next;
+    }
+
+    file.close();
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -43,42 +44,25 @@ void printStack(Stack& stack) {
     cout << endl;
 }
 
-int main() {
-    Stack stack;
-    stack.top = nullptr;
+void freeStack(Stack& stack) {
+    while (stack.top != nullptr) {
+        popStack(stack); // Удаляем узлы и освобождаем память
+    }
+}
 
-    string command;
-    int value;
+void writeStackToFile(const Stack& stack, const string& filename) {
+    ofstream file(filename);
 
-    cout << "Введите команду (push, pop, print, exit):" << endl;
-
-    while (true) {
-        cout << "> ";
-        getline(cin, command);
-
-        stringstream ss(command);
-        string action;
-        ss >> action;
-
-        if (action == "push") {
-            ss >> value;
-            if (!ss.fail()) {
-                pushStack(stack, value);
-                cout << "Элемент " << value << " добавлен в стек." << endl;
-            } else {
-                cout << "Неверный ввод. Используйте: push <value>" << endl;
-            }
-        } else if (action == "pop") {
-            popStack(stack);
-        } else if (action == "print") {
-            printStack(stack);
-        } else if (action == "exit") {
-            cout << "Выход..." << endl;
-            break;
-        } else {
-            cout << "Неизвестная команда. Доступные команды: push, pop, print, exit." << endl;
-        }
+    if (!file.is_open()) {
+        cerr << "Ошибка при открытии файла для записи" << endl;
+        return;
     }
 
-    return 0;
+    NodeS* temp = stack.top;
+    while (temp != nullptr) {
+        file << temp->data << endl;
+        temp = temp->next;
+    }
+
+    file.close();
 }
